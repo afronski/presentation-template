@@ -1,21 +1,14 @@
 {
-  "name": "reveal.js",
-  "version": "2.5.0",
-  "description": "The HTML Presentation Framework",
-  "homepage": "http://lab.hakim.se/reveal-js",
-  "subdomain": "revealjs",
+  "name": "presentation-template",
+  "version": "0.1.0",
+  "description": "My template for further presentations made after 2013.",
   "scripts": {
     "test": "grunt jshint",
-    "start": ""
+    "start": "grunt serve"
   },
   "author": {
-    "name": "Hakim El Hattab",
-    "email": "hakim.elhattab@gmail.com",
-    "web": "http://hakim.se"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/hakimel/reveal.js.git"
+    "name": "Wojciech Gawroński",
+    "email": "afronski@gmail.com"
   },
   "engines": {
     "node": "~0.8.0"
@@ -39,7 +32,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/hakimel/reveal.js/blob/master/LICENSE"
+      "url": "https://github.com/afronski/presentation-template/blob/master/License - MIT.md"
     }
   ]
 }
