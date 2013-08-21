@@ -18,19 +18,22 @@
     <link rel="stylesheet" href="lib/css/zenburn.css">
 
     <script>
-      document.write("<link rel='stylesheet' href='css/print/'" +
+      document.write("<link rel='stylesheet' href='css/print/" +
                      (window.location.search.match(/print-pdf/gi) ? "pdf" : "paper") +
-                      ".css' type='text/css' media='print'>");
+                    ".css' type='text/css' media='print'>");
     </script>
   </head>
   <body>
     <div class="reveal">
       <div class="slides">
-        <section data-background="#4d7e65" data-background-transition="slide">
+        <section>
           <h1>Presentation Template</h1>
+          <aside class="notes">
+            This way you can provide aside speaker notes ;).
+          </aside>
         </section>
 
-        <section data-background="#4d7e65" data-background-transition="slide">
+        <section>
           <h2>Code Sample</h2>
           <pre><code data-trim contenteditable>
 -module(math).
@@ -43,11 +46,11 @@ factorial(X) when X > 0 ->
           </code></pre>
         </section>
 
-        <section data-background="#4d7e65" data-background-transition="slide">
+        <section>
           <h1>Questions?</h1>
         </section>
 
-        <section data-background="#4d7e65" data-background-transition="slide">
+        <section>
           <h1>Thank you for your attention!</h1>
         </section>
       </div>
@@ -63,8 +66,9 @@ factorial(X) when X > 0 ->
         history: true,
         center: true,
 
-        theme: Reveal.getQueryHash().theme,
+        theme: "default",
         transition: "linear",
+        backgroundTransition: "slide",
 
         dependencies: [
           {
@@ -78,6 +82,12 @@ factorial(X) when X > 0 ->
           },
           {
             src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; }
+          },
+          {
+            src: 'socket.io/socket.io.js', async: true
+          },
+          {
+            src: 'plugin/notes-server/client.js', async: true
           }
         ]
       });
