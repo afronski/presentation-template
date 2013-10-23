@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=1150">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
     <title>reveal.js - Slide Notes</title>
 
     <style>
@@ -10,51 +11,48 @@
         font-family: Helvetica;
       }
 
+      button {
+        font-size: 1.2em;
+
+        width: 220px;
+        height: 50px;
+      }
+
       #notes {
-        font-size: 24px;
-        width: 640px;
-        margin-top: 5px;
-        clear: left;
+        font-size: 1.2em;
+
+        width: 93%;
+        min-height: 50px;
+
+        margin: 5px 0;
+        padding: 10px;
+
+        border: 2px dashed black;
       }
 
       #wrap-current-slide {
-        width: 640px;
-        height: 512px;
-        float: left;
-        overflow: hidden;
+        width: 445px;
+        height: 355px;
       }
 
       #current-slide {
         width: 1280px;
         height: 1024px;
         border: none;
-
-        -webkit-transform-origin: 0 0;
-           -moz-transform-origin: 0 0;
-            -ms-transform-origin: 0 0;
-             -o-transform-origin: 0 0;
-                transform-origin: 0 0;
-
-        -webkit-transform: scale(0.5);
-           -moz-transform: scale(0.5);
-            -ms-transform: scale(0.5);
-             -o-transform: scale(0.5);
-                transform: scale(0.5);
       }
 
       #wrap-next-slide {
-        width: 448px;
-        height: 358px;
-        float: left;
-        margin: 0 0 0 10px;
-        overflow: hidden;
+        width: 445px;
+        height: 355px;
       }
 
       #next-slide {
         width: 1280px;
         height: 1024px;
         border: none;
+      }
 
+      .scaled-slide {
         -webkit-transform-origin: 0 0;
            -moz-transform-origin: 0 0;
             -ms-transform-origin: 0 0;
@@ -70,77 +68,128 @@
 
       .slides {
         position: relative;
+        float: left;
+
         margin-bottom: 10px;
         border: 1px solid black;
+
         border-radius: 2px;
-        background: rgb(28, 30, 32);
+        background: rgb(33, 33, 33);
+        overflow: hidden;
+      }
+
+      .next {
+        margin: 0 0 0 10px;
       }
 
       .slides span {
         position: absolute;
+
         top: 3px;
         left: 3px;
+
         font-weight: bold;
         font-size: 14px;
-        color: rgba( 255, 255, 255, 0.9 );
+
+        color: rgba(255, 255, 255, 0.9);
       }
 
-      @media screen and (min-width: 1000px){
+      @media only screen and (max-width: 540px) {
         button {
-          width: 600px;
-          height: 150px;
-          font-size: 4em;
+          width: 160px;
+          height: 44px;
+        }
+
+        #wrap-current-slide {
+          width: 320px;
+          height: 255px;
+        }
+
+        #wrap-next-slide {
+          width: 320px;
+          height: 255px;
         }
 
         #notes {
-          font-size: 4em;
+          width: 300px;
+        }
+
+        .next {
+          margin: 0;
+        }
+
+        .scaled-slide {
+          -webkit-transform-origin: 0 0;
+             -moz-transform-origin: 0 0;
+              -ms-transform-origin: 0 0;
+               -o-transform-origin: 0 0;
+                  transform-origin: 0 0;
+
+          -webkit-transform: scale(0.25);
+             -moz-transform: scale(0.25);
+              -ms-transform: scale(0.25);
+               -o-transform: scale(0.25);
+                  transform: scale(0.25);
         }
       }
     </style>
   </head>
 
   <body>
-    <div id="wrap-current-slide" class="slides">
-      <iframe src="/?receiver" width="1280" height="1024" id="current-slide"></iframe>
-    </div>
-    <div>
-      <button id="prevslide">&lt; Previous</button> <button id="nextslide">Next &gt;</button>
-    </div>
-    <div id="wrap-next-slide" class="slides">
-      <iframe src="/?receiver" width="640" height="512" id="next-slide"></iframe>
-      <span>UPCOMING:</span>
+    <div id="controls">
+      <button id="prevslide">PREVIOUS</button> <button id="nextslide">NEXT</button>
     </div>
     <div id="notes"></div>
-
+    <div id="wrap-current-slide" class="slides">
+      <iframe src="/?receiver" id="current-slide" class="scaled-slide"></iframe>
+    </div>
+    <div id="wrap-next-slide" class="slides next">
+      <iframe src="/?receiver" id="next-slide" class="scaled-slide"></iframe>
+      <span>UPCOMING:</span>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/plugin/markdown/marked.js"></script>
 
     <script>
-      var socketId = "{{socketId}}";
-      var socket = io.connect(window.location.origin);
-      var notes = document.getElementById("notes");
-      var currentSlide = document.getElementById("current-slide");
-      var nextSlide = document.getElementById("next-slide");
+      var socketId = "{{ socketId }}",
 
-      socket.on("slidedata", function(data) {
-        // ignore data from sockets that aren't ours
-        if (data.socketId !== socketId) { return; }
+          socket = io.connect(window.location.origin),
 
-        if (data.markdown) {
-          notes.innerHTML = marked(data.notes);
+          notes = document.getElementById("notes"),
+
+          currentSlide = document.getElementById("current-slide"),
+          nextSlide = document.getElementById("next-slide"),
+
+          supportsTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints;
+
+      function fillNotes(notesContent, isMarkdown) {
+        if (isMarkdown) {
+          notes.innerHTML = marked(notesContent);
+        } else {
+          notes.innerHTML = notesContent;
         }
-        else {
-          notes.innerHTML = data.notes;
-        }
+      }
 
-        currentSlide.contentWindow.Reveal.slide(data.indexh, data.indexv);
-        nextSlide.contentWindow.Reveal.slide(data.nextindexh, data.nextindexv);
+      socket.on("initialSlideReceived", function(data) {
+        fillNotes(data.notes, data.markdown);
       });
 
-      socket.on("fragmentdata", function(data) {
-        // ignore data from sockets that aren't ours
-        if (data.socketId !== socketId) { return; }
+      socket.on("slideData", function(data) {
+        if (data.socketId !== socketId) {
+          return;
+        }
+
+        fillNotes(data.notes, data.markdown);
+
+        currentSlide.contentWindow.Reveal.slide(data.indexH, data.indexV);
+        nextSlide.contentWindow.Reveal.slide(data.nextIndexH, data.nextIndexV);
+      });
+
+      socket.on("fragmentData", function(data) {
+        if (data.socketId !== socketId) {
+          return;
+        }
 
         if (data.fragment === "next") {
           currentSlide.contentWindow.Reveal.nextFragment();
@@ -149,13 +198,12 @@
         }
       });
 
-      // Previous and next slide event.
       function sendPrevSlide() {
-        socket.emit("prevslide");
+        socket.emit("prevSlide");
       }
 
       function sendNextSlide() {
-        socket.emit("nextslide");
+        socket.emit("nextSlide");
       }
 
       function keyDownHandler(event) {
@@ -166,10 +214,17 @@
         }
       }
 
-      document.querySelector("#prevslide").addEventListener("click", sendPrevSlide, true);
-      document.querySelector("#nextslide").addEventListener("click", sendNextSlide, true);
+      if (supportsTouch) {
+        document.querySelector("#prevslide").addEventListener("touchend", sendPrevSlide, true);
+        document.querySelector("#nextslide").addEventListener("touchend", sendNextSlide, true);
+      } else {
+        document.addEventListener("keydown", keyDownHandler, true);
 
-      document.addEventListener("keydown", keyDownHandler, true);
+        document.querySelector("#prevslide").addEventListener("click", sendPrevSlide, true);
+        document.querySelector("#nextslide").addEventListener("click", sendNextSlide, true);
+      }
+
+      socket.emit("initialSlide");
     </script>
   </body>
 </html>

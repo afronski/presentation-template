@@ -3,66 +3,79 @@
     return;
   }
 
-  var socket = io.connect(window.location.origin);
-  var socketId = Math.random().toString().slice(15);
+  var socket = io.connect(window.location.origin),
+      socketId = Math.random().toString().slice(15);
 
   console.log("View slide notes at " + window.location.origin + "/notes/" + socketId);
+
   window.open(window.location.origin + "/notes/" + socketId, "notes-" + socketId);
 
-  // Handle events sent from client.
-  socket.on("nextslide", function() {
+  socket.on("nextSlide", function() {
     Reveal.next();
   });
 
-  socket.on("prevslide", function() {
+  socket.on("prevSlide", function() {
     Reveal.prev();
   });
 
-  // Fires when a fragment is shown
+  socket.on("initialSlide", function() {
+    var slide = Reveal.getCurrentSlide(),
+        notesElement = slide.querySelector("aside.notes"),
+
+        firstSlideData = {
+          notes: notesElement.innerHTML,
+          markdown: notesElement.getAttribute("data-markdown") === "string"
+        };
+
+    socket.emit("initialSlideReceived", firstSlideData);
+  })
+
   Reveal.addEventListener("fragmentshown", function(event) {
     var fragmentData = {
       fragment : "next",
       socketId : socketId
     };
 
-    socket.emit("fragmentchanged", fragmentData);
+    socket.emit("fragmentChanged", fragmentData);
   });
 
-  // Fires when a fragment is hidden
   Reveal.addEventListener("fragmenthidden", function(event) {
     var fragmentData = {
       fragment : "previous",
       socketId : socketId
     };
 
-    socket.emit("fragmentchanged", fragmentData);
+    socket.emit("fragmentChanged", fragmentData);
   });
 
-  // Fires when slide is changed
   Reveal.addEventListener("slidechanged", function(event) {
-    var nextindexh;
-    var nextindexv;
-    var slideElement = event.currentSlide;
+    var nextIndexH,
+        nextIndexV,
+
+        slideElement = event.currentSlide,
+        notes = slideElement.querySelector("aside.notes"),
+
+        slideData = {
+          notes : notes ? notes.innerHTML : "",
+
+          indexH : event.indexh,
+          indexV : event.indexv,
+
+          nextindexH : nextIndexH,
+          nextindexV : nextIndexV,
+
+          socketId : socketId,
+          markdown : notes ? typeof(notes.getAttribute("data-markdown")) === "string" : false
+        };
 
     if (slideElement.nextElementSibling && slideElement.parentNode.nodeName == "SECTION") {
-      nextindexh = event.indexh;
-      nextindexv = event.indexv + 1;
+      nextIndexH = event.indexh;
+      nextIndexV = event.indexv + 1;
     } else {
-      nextindexh = event.indexh + 1;
-      nextindexv = 0;
+      nextIndexH = event.indexh + 1;
+      nextIndexV = 0;
     }
 
-    var notes = slideElement.querySelector("aside.notes");
-    var slideData = {
-      notes : notes ? notes.innerHTML : "",
-      indexh : event.indexh,
-      indexv : event.indexv,
-      nextindexh : nextindexh,
-      nextindexv : nextindexv,
-      socketId : socketId,
-      markdown : notes ? typeof notes.getAttribute("data-markdown") === "string" : false
-    };
-
-    socket.emit("slidechanged", slideData);
+    socket.emit("slideChanged", slideData);
   });
 } ());
