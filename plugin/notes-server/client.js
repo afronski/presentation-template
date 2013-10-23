@@ -10,24 +10,76 @@
 
   window.open(window.location.origin + "/notes/" + socketId, "notes-" + socketId);
 
-  socket.on("nextSlide", function() {
-    Reveal.next();
+  function getNextSlideCoordinates(slide, actual) {
+    var h = actual.indexH,
+        v = actual.indexV;
+
+    if (typeof(h) !== "number") {
+      h = actual.indexh;
+    }
+
+    if (typeof(v) !== "number") {
+      v = actual.indexv;
+    }
+
+    if (slide.nextElementSibling && slide.parentNode.nodeName == "SECTION") {
+      nextIndexH = h;
+      nextIndexV = v + 1;
+    } else {
+      nextIndexH = h + 1;
+      nextIndexV = v;
+    }
+
+    return {
+      H: nextIndexH,
+      V: nextIndexV
+    };
+  }
+
+  socket.on("nextSlide", function(data) {
+    if (data.socketId === socketId) {
+      Reveal.next();
+    }
   });
 
-  socket.on("prevSlide", function() {
-    Reveal.prev();
+  socket.on("prevSlide", function(data) {
+    if (data.socketId === socketId) {
+      Reveal.prev();
+    }
   });
 
-  socket.on("initialSlide", function() {
-    var slide = Reveal.getCurrentSlide(),
-        notesElement = slide.querySelector("aside.notes"),
+  socket.on("initialSlide", function(data) {
+    var start = { indexH: 0, indexV: 0 },
+        firstSlideData,
+        notesElement,
+        slide,
+        next;
 
-        firstSlideData = {
-          notes: notesElement.innerHTML,
-          markdown: notesElement.getAttribute("data-markdown") === "string"
-        };
+    if (data.socketId !== socketId) {
+      return;
+    }
 
-    socket.emit("initialSlideReceived", firstSlideData);
+    slide = Reveal.getCurrentSlide();
+    notesElement = slide.querySelector("aside.notes");
+
+    if (slide && notesElement) {
+      next = getNextSlideCoordinates(slide, start);
+
+      firstSlideData = {
+        notes: notesElement.innerHTML,
+        markdown: notesElement.getAttribute("data-markdown") === "string",
+
+        indexH : start.indexH,
+        indexV : start.indexV,
+
+        nextIndexH: next.H,
+        nextIndexV: next.V,
+
+        socketId: socketId
+      };
+
+      socket.emit("initialSlideReceived", firstSlideData);
+    }
   })
 
   Reveal.addEventListener("fragmentshown", function(event) {
@@ -49,10 +101,7 @@
   });
 
   Reveal.addEventListener("slidechanged", function(event) {
-    var nextIndexH,
-        nextIndexV,
-
-        slideElement = event.currentSlide,
+    var slideElement = event.currentSlide,
         notes = slideElement.querySelector("aside.notes"),
 
         slideData = {
@@ -61,20 +110,16 @@
           indexH : event.indexh,
           indexV : event.indexv,
 
-          nextindexH : nextIndexH,
-          nextindexV : nextIndexV,
-
           socketId : socketId,
           markdown : notes ? typeof(notes.getAttribute("data-markdown")) === "string" : false
-        };
+        },
 
-    if (slideElement.nextElementSibling && slideElement.parentNode.nodeName == "SECTION") {
-      nextIndexH = event.indexh;
-      nextIndexV = event.indexv + 1;
-    } else {
-      nextIndexH = event.indexh + 1;
-      nextIndexV = 0;
-    }
+        next;
+
+    next = getNextSlideCoordinates(slideElement, event);
+
+    slideData.nextIndexH = next.H;
+    slideData.nextIndexV = next.V;
 
     socket.emit("slideChanged", slideData);
   });

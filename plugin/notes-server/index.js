@@ -31,16 +31,16 @@ io.sockets.on("connection", function(socket) {
     socket.broadcast.emit("fragmentData", fragmentData);
   });
 
-  socket.on("nextSlide", function() {
-    socket.broadcast.emit("nextSlide");
+  socket.on("nextSlide", function(data) {
+    socket.broadcast.emit("nextSlide", data);
   });
 
-  socket.on("prevSlide", function() {
-    socket.broadcast.emit("prevSlide");
+  socket.on("prevSlide", function(data) {
+    socket.broadcast.emit("prevSlide", data);
   });
 
-  socket.on("initialSlide", function() {
-    socket.broadcast.emit("initialSlide");
+  socket.on("initialSlide", function(data) {
+    socket.broadcast.emit("initialSlide", data);
   });
 
   socket.on("initialSlideReceived", function(data) {

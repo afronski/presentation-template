@@ -137,7 +137,7 @@
 
   <body>
     <div id="controls">
-      <button id="prevslide">PREVIOUS</button> <button id="nextslide">NEXT</button>
+      <button id="go-to-previous-slide">PREVIOUS</button> <button id="go-to-next-slide">NEXT</button>
     </div>
     <div id="notes"></div>
     <div id="wrap-current-slide" class="slides">
@@ -153,6 +153,8 @@
 
     <script>
       var socketId = "{{ socketId }}",
+
+          SocketData = { socketId: socketId },
 
           socket = io.connect(window.location.origin),
 
@@ -172,7 +174,16 @@
       }
 
       socket.on("initialSlideReceived", function(data) {
+        if (data.socketId !== socketId) {
+          return;
+        }
+
         fillNotes(data.notes, data.markdown);
+
+        setTimeout(function() {
+          currentSlide.contentWindow.Reveal.slide(data.indexH, data.indexV);
+          nextSlide.contentWindow.Reveal.slide(data.nextIndexH, data.nextIndexV);
+        }, 1000);
       });
 
       socket.on("slideData", function(data) {
@@ -199,11 +210,11 @@
       });
 
       function sendPrevSlide() {
-        socket.emit("prevSlide");
+        socket.emit("prevSlide", SocketData);
       }
 
       function sendNextSlide() {
-        socket.emit("nextSlide");
+        socket.emit("nextSlide", SocketData);
       }
 
       function keyDownHandler(event) {
@@ -214,17 +225,30 @@
         }
       }
 
+      function cancelInteraction(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        return false;
+      }
+
       if (supportsTouch) {
-        document.querySelector("#prevslide").addEventListener("touchend", sendPrevSlide, true);
-        document.querySelector("#nextslide").addEventListener("touchend", sendNextSlide, true);
+        document.querySelector("#go-to-previous-slide").addEventListener("touchend", sendPrevSlide, true);
+        document.querySelector("#go-to-next-slide").addEventListener("touchend", sendNextSlide, true);
+
+        document.querySelector("#current-slide").addEventListener("touchend", cancelInteraction, true);
+        document.querySelector("#next-slide").addEventListener("touchend", cancelInteraction, true);
       } else {
         document.addEventListener("keydown", keyDownHandler, true);
 
-        document.querySelector("#prevslide").addEventListener("click", sendPrevSlide, true);
-        document.querySelector("#nextslide").addEventListener("click", sendNextSlide, true);
+        document.querySelector("#go-to-previous-slide").addEventListener("click", sendPrevSlide, true);
+        document.querySelector("#go-to-next-slide").addEventListener("click", sendNextSlide, true);
+
+        document.querySelector("#current-slide").addEventListener("click", cancelInteraction, true);
+        document.querySelector("#next-slide").addEventListener("click", cancelInteraction, true);
       }
 
-      socket.emit("initialSlide");
+      socket.emit("initialSlide", SocketData);
     </script>
   </body>
 </html>
