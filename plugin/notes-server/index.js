@@ -1,35 +1,51 @@
-var express   = require("express");
-var fs        = require("fs");
-var io        = require("socket.io");
-var _         = require("underscore");
-var Mustache  = require("mustache");
+var BROWN = "\033[33m",
+    GREEN = "\033[32m",
+    RESET = "\033[0m",
 
-var app       = express.createServer();
-var staticDir = express.static;
+    express   = require("express"),
+    fs        = require("fs"),
 
-io            = io.listen(app);
+    io        = require("socket.io"),
 
-var opts = {
-  port :      1947,
-  baseDir :   __dirname + "/../../"
-};
+    _         = require("underscore"),
+    Mustache  = require("mustache"),
+
+    app       = express.createServer(),
+    staticDir = express.static,
+
+    options = {
+      port : 1947,
+      baseDir : __dirname + "/../../"
+    },
+
+    slidesLocation = "http://localhost" + (options.port ? (":" + options.port) : "");
+
+io = io.listen(app);
 
 io.sockets.on("connection", function(socket) {
-  socket.on("slidechanged", function(slideData) {
-    socket.broadcast.emit("slidedata", slideData);
+  socket.on("slideChanged", function(slideData) {
+    socket.broadcast.emit("slideData", slideData);
   });
 
-  socket.on("fragmentchanged", function(fragmentData) {
-    socket.broadcast.emit("fragmentdata", fragmentData);
+  socket.on("fragmentChanged", function(fragmentData) {
+    socket.broadcast.emit("fragmentData", fragmentData);
   });
 
-  socket.on("nextslide", function() {
-    socket.broadcast.emit("nextslide");
+  socket.on("nextSlide", function(data) {
+    socket.broadcast.emit("nextSlide", data);
   });
 
-  socket.on("prevslide", function() {
-    socket.broadcast.emit("prevslide");
-  })
+  socket.on("prevSlide", function(data) {
+    socket.broadcast.emit("prevSlide", data);
+  });
+
+  socket.on("initialSlide", function(data) {
+    socket.broadcast.emit("initialSlide", data);
+  });
+
+  socket.on("initialSlideReceived", function(data) {
+    socket.broadcast.emit("initialSlideReceived", data);
+  });
 });
 
 app.configure(function() {
@@ -39,28 +55,22 @@ app.configure(function() {
 });
 
 app.get("/", function(req, res) {
-  res.writeHead(200, {"Content-Type": "text/html"});
-  fs.createReadStream(opts.baseDir + "/index.html").pipe(res);
+  res.writeHead(200, { "Content-Type": "text/html" });
+  fs.createReadStream(options.baseDir + "/index.html").pipe(res);
 });
 
 app.get("/notes/:socketId", function(req, res) {
-  fs.readFile(opts.baseDir + "plugin/notes-server/notes.html", function(err, data) {
+  fs.readFile(options.baseDir + "plugin/notes-server/notes.html", function(err, data) {
     res.send(Mustache.to_html(data.toString(), {
       socketId : req.params.socketId
     }));
   });
 });
 
-// Actually listen
-app.listen(opts.port || null);
+app.listen(options.port || null);
 
-var brown = "\033[33m",
-  green = "\033[32m",
-  reset = "\033[0m";
+console.log(BROWN + "reveal.js - Speaker Notes" + RESET);
 
-var slidesLocation = "http://localhost" + ( opts.port ? ( ":" + opts.port ) : "" );
-
-console.log( brown + "reveal.js - Speaker Notes" + reset );
-console.log( "1. Open the slides at " + green + slidesLocation + reset );
-console.log( "2. Click on the link your JS console to go to the notes page" );
-console.log( "3. Advance through your slides and your notes will advance automatically" );
+console.log("1. Open the slides at " + GREEN + slidesLocation + RESET);
+console.log("2. Click on the link your JS console to go to the notes page");
+console.log("3. Advance through your slides and your notes will advance automatically");
