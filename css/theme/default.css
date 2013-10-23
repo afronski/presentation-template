@@ -1,24 +1,90 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
+@import url(http://fonts.googleapis.com/css?family=News%20Cycle:400,700,400italic&subset=latin,latin-ext);
 /**
  * Default theme for reveal.js.
  *
  * Copyright (C) 2011-2012 Hakim El Hattab, http://hakim.se
  */
-@font-face {
-  font-family: 'League Gothic';
-  src: url("../../lib/font/league_gothic-webfont.eot");
-  src: url("../../lib/font/league_gothic-webfont.eot?#iefix") format("embedded-opentype"), url("../../lib/font/league_gothic-webfont.woff") format("woff"), url("../../lib/font/league_gothic-webfont.ttf") format("truetype"), url("../../lib/font/league_gothic-webfont.svg#LeagueGothicRegular") format("svg");
-  font-weight: normal;
-  font-style: normal; }
 
 /*********************************************
  * GLOBAL STYLES
  *********************************************/
 body {
-  background-color: #4d7e65; }
+  background-color: #46483e; }
+
+.reveal .hidden {
+  position: absolute;
+  left: -9999em;
+  top: -9999em;
+}
+
+.reveal .fdd-logo {
+  background: transparent;
+}
+
+.reveal .notDisplayed {
+  visibility: hidden !important;
+}
+
+.reveal #sendEvents {
+  font-size: 1em;
+  width: 400px;
+
+  border: 2px solid #33342C;
+  border-radius: 5px;
+  background: #33342C;
+
+  padding: 15px;
+
+  color: #888888;
+}
+
+.reveal .justified-to-left ul {
+  margin: 25px 0;
+  list-style: none;
+}
+
+.reveal .justified-to-left ul li {
+  margin-left: 75px;
+}
+
+.reveal .justified-to-left ul li div {
+  display: inline-block;
+  width: 250px;
+}
+
+.reveal #gauge {
+  float: right;
+  margin-right: 200px;
+}
+
+.reveal #apache {
+  float: left;
+  margin-left: 150px;
+  cursor: wait;
+}
+
+.reveal #node {
+  float: right;
+  margin-right: 150px;
+  cursor: pointer;
+}
+
+.reveal #cpu-bound {
+  float: left;
+  margin-left: 200px;
+}
+
+.reveal .links li {
+  line-height: 1em;
+}
+
+.reveal .justified-to-left {
+  text-align: left;
+  margin-left: 4.5em;
+}
 
 .reveal {
-  font-family: "Lato", sans-serif;
+  font-family: "News Cycle", sans-serif;
   font-size: 36px;
   font-weight: 200;
   letter-spacing: -0.02em;
@@ -40,7 +106,7 @@ body {
 .reveal h6 {
   margin: 0 0 20px 0;
   color: #eeeeee;
-  font-family: "League Gothic", Impact, sans-serif;
+  font-family: "News Cycle", Impact, sans-serif;
   line-height: 0.9em;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -48,6 +114,164 @@ body {
 
 .reveal h1 {
   text-shadow: 0 1px 0 #cccccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbbbbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaaaaa, 0 6px 1px rgba(0, 0, 0, 0.1), 0 0 5px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.3), 0 3px 5px rgba(0, 0, 0, 0.2), 0 5px 10px rgba(0, 0, 0, 0.25), 0 20px 20px rgba(0, 0, 0, 0.15); }
+
+.reveal h2 {
+  color: #8cc84b;
+}
+
+.reveal .quoted em {
+  color: #8cc84b;
+}
+
+.reveal .quoted strong {
+  color: #8cc84b;
+}
+
+.reveal .photo-credits {
+  font-size: 50%;
+  list-style: none;
+}
+
+.reveal .photo-credits li {
+  display: inline;
+}
+
+.reveal .photo-credits li:after {
+  content: ",";
+}
+
+.reveal .photo-credits li:last-child:after {
+  content: "";
+}
+
+.reveal .spaced {
+  margin-top: 0.4em;
+}
+
+.reveal .spaced-max {
+  margin-top: 75px;
+  margin-bottom: 0;
+}
+
+.reveal .half-sized {
+  zoom: 0.5;
+}
+
+.reveal .no-bullets {
+  list-style: none;
+  margin-left: 0;
+}
+
+.reveal .no-bullets li {
+  line-height: 1.2em;
+}
+
+.reveal .no-bullets li em {
+  width: 150px;
+  padding: 2px 5px;
+
+  border-radius: 5px;
+  background-color: #33342C;
+
+  font-weight: bold;
+  font-size: 45%;
+  text-align: center;
+
+  display: inline-block;
+}
+
+.reveal .no-bullets li span {
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.reveal .move-up {
+  margin-top: -100px;
+}
+
+.reveal li pre {
+  box-shadow: none;
+}
+
+.reveal pre {
+  box-shadow: none;
+  width: 100%;
+  margin-top: 1.5em;
+  font-size: 0.7em;
+}
+
+.reveal .margined {
+  margin-left: 35px;
+}
+
+.reveal h2.no-uppercase {
+  text-transform: none;
+}
+
+.reveal .license {
+  font-size: 40%;
+
+  position: absolute;
+
+  top: 500px;
+  right: 0;
+}
+
+.reveal .license a {
+  vertical-align: middle;
+  margin-bottom: 5px;
+}
+
+.reveal #random {
+  padding-top: 50px;
+  list-style: none;
+  margin: 0;
+}
+
+.reveal #random li {
+  display: inline;
+  margin: 45px;
+}
+
+.reveal #random li img {
+  transition: all 0.1s linear;
+  opacity: 0.8;
+
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: rotate(2.75deg) translateZ(0);
+  transform: rotate(2.75deg) translateZ(0);
+}
+
+.reveal #random :nth-child(2n) img {
+  -webkit-transform: none;
+  transform: none;
+}
+
+.reveal #random :nth-child(3n) img {
+  -webkit-transform: rotate(-2.5deg);
+  transform: rotate(-2.5deg);
+}
+
+.reveal #random :nth-child(4n) img {
+  -webkit-transform: scale(0.7);
+  transform: scale(0.7);
+}
+
+.reveal #random :nth-child(5n) img {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+.reveal #random :nth-child(6n) img {
+  -webkit-transform: rotate(-4.5deg);
+  transform: rotate(-4.5deg);
+}
+
+.reveal #random li img:hover {
+  -webkit-transform: scale(1.5);
+  transform: scale(1.5);
+}
 
 /*********************************************
  * LINKS
@@ -76,8 +300,7 @@ body {
 .reveal section img {
   margin: 15px 0px;
   background: rgba(255, 255, 255, 0.12);
-  border: 4px solid #eeeeee;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  border: 0;
   -webkit-transition: all .2s linear;
   -moz-transition: all .2s linear;
   -ms-transition: all .2s linear;
